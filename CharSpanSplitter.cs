@@ -4,11 +4,11 @@
 
     public readonly ref struct CharSpanSplitter
     {
-        private readonly ReadOnlySpan<char> _input;
+        private readonly ReadOnlySpan<char> input;
 
-        public CharSpanSplitter(ReadOnlySpan<char> input) => _input = input;
+        public CharSpanSplitter(ReadOnlySpan<char> input) => this.input = input;
 
-        public Enumerator GetEnumerator() => new Enumerator(_input);
+        public Enumerator GetEnumerator() => new Enumerator(input);
 
         public ref struct Enumerator
         {

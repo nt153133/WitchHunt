@@ -1,6 +1,6 @@
 ﻿# WitchHunt
 
-This is a byte pattern matching library which uses the GreyMagic style of patterns.
+A byte pattern matching library which uses the GreyMagic style of patterns.
 
 ##Pattern Format
 
@@ -57,7 +57,7 @@ var text = peHeader.ImageSectionHeaders[0];
 var WitchHuntSearcher = new WitchHunt(file.Slice((int) text.PointerToRawData, (int) text.SizeOfRawData), new IntPtr(text.VirtualAddress));
 IntPtr result = WitchHuntSearcher.Search("48 8D 05 ?? ?? ?? ?? 48 C7 43 ?? ?? ?? ?? ?? 48 8D 4B ?? 48 89 03 66 C7 43 ?? ?? ?? Add 3 TraceRelative");
 ```
-Though you'd want to only everything above WitchHuntSearcher.Search() once to prevent loading the file into memory multiple times.
+Though you'd want to only do everything above WitchHuntSearcher.Search() once to prevent loading the file into memory multiple times.
 
 ####From a process
 Using the pattern searcher on a process's memory is very easy. This example is assuming it's be run while injected in the process.

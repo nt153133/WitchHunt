@@ -2,7 +2,7 @@
 
 A byte pattern matching library which uses the GreyMagic style of patterns.
 
-##Pattern Format
+## Pattern Format
 
 Expects pattern to be in the following format:
 
@@ -12,7 +12,7 @@ Expects pattern to be in the following format:
 
     48 8D 05 ?? ?? ?? ?? 48 C7 43 ?? ?? ?? ?? ?? 48 8D 4B ?? 48 89 03 66 C7 43 ?? ?? ?? Add 3 TraceRelative
 
-###Available Commands:
+### Available Commands:
 
 **Add #** - Shifts the searcher this # is from the start of the pattern. So add 1 moves us to byte 2. add 2 moves to byte 3 etc.
 
@@ -28,24 +28,24 @@ Expects pattern to be in the following format:
 
 **TraceRelative** - Follow the relative address used in calls and lea's
 
-##Main Functions
+## Main Functions
 
-###IntPtr Search(string pattern)
+### IntPtr Search(string pattern)
 
 Searches for the first match of the given pattern from the start of the data
 
-###IntPtr Search(string pattern, IntPtr start, int maxSearchLength)
+### IntPtr Search(string pattern, IntPtr start, int maxSearchLength)
 
 Searches for the pattern with a given starting point in the data and a max length of bytes to search.
 Useful for searching for a pattern within a certain function, passing the function address as start.
 
-###IntPtr[] SearchMany(string pattern)
+### IntPtr[] SearchMany(string pattern)
 
 Returns all the matches of a given pattern across all the data bytes.
 
-##Examples
+## Examples
 
-####From an executable
+#### From an executable
 To run the pattern search on an exe (like ffxiv_dx11.exe) you'll need the .text portion of PE. 
 Easiest way I've found is to use the nuget package PeNet to get the pointer to the raw data of the header and the .text header's address.
 Then load the file into a Memory<byte> and slice out the .text portion. Can also be done for .rdata/.data etc.
@@ -59,7 +59,7 @@ IntPtr result = WitchHuntSearcher.Search("48 8D 05 ?? ?? ?? ?? 48 C7 43 ?? ?? ??
 ```
 Though you'd want to only do everything above WitchHuntSearcher.Search() once to prevent loading the file into memory multiple times.
 
-####From a process
+#### From a process
 Using the pattern searcher on a process's memory is very easy. This example is assuming it's be run while injected in the process.
 
 ```cs

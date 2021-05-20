@@ -107,7 +107,7 @@
                 length++;
             }
 
-            if (enumerator.WordPos != enumerator.Input.Length)
+            if (enumerator.WordPos <= enumerator.Input.Length)
             {
                 post.Add(new string(enumerator.Current));
                 while (enumerator.MoveNext())

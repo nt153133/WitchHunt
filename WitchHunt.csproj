@@ -3,6 +3,11 @@
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
         <LangVersion>9</LangVersion>
+        <Version>1.0.2</Version>
+        <Description>A byte pattern matching library which uses the GreyMagic style of patterns.</Description>
+        <PackageProjectUrl>https://github.com/nt153133/WitchHunt</PackageProjectUrl>
+        <PackageReleaseNotes>Small memory optimization</PackageReleaseNotes>
+        <RepositoryUrl>https://github.com/nt153133/WitchHunt</RepositoryUrl>
     </PropertyGroup>
 
     <ItemGroup>

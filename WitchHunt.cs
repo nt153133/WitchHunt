@@ -82,13 +82,14 @@
 
             var bytes = new Span<byte>(new byte[pattern.Length]);
             var mask = new Span<byte>(new byte[pattern.Length]);
-            var post = new List<string>(3);
+            List<string> post = null;
             parsedPattern = default;
             var length = 0;
             while (enumerator.MoveNext())
             {
                 if (enumerator.Current.Length > 2)
                 {
+                    post = new List<string>(3);
                     break;
                 }
 
@@ -107,7 +108,7 @@
                 length++;
             }
 
-            if (enumerator.WordPos <= enumerator.Input.Length)
+            if (post != null && enumerator.WordPos < enumerator.Input.Length)
             {
                 post.Add(new string(enumerator.Current));
                 while (enumerator.MoveNext())
@@ -118,7 +119,11 @@
 
             parsedPattern.BytesToSearch = bytes[..length];
             parsedPattern.Mask = mask[..length];
-            parsedPattern.PostPattern = new Span<string>(post.ToArray());
+            if (post != null)
+            {
+                parsedPattern.PostPattern = new Span<string>(post.ToArray());
+            }
+
             return true;
         }
 

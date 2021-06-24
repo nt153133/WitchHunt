@@ -184,11 +184,11 @@
                 return IntPtr.Zero;
             }
 
-            var resultPointer = matchingPtr;
+            var resultPointer = ImageBase;
 
             if (parsedPattern.PostPattern.Length == 0)
             {
-                resultPointer += ImageBase.ToInt32();
+                resultPointer += matchingPtr.ToInt32();
             }
 
             for (var i = 0; i < parsedPattern.PostPattern.Length; i++)

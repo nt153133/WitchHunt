@@ -108,7 +108,7 @@
                 length++;
             }
 
-            if (post != null && enumerator.WordPos < enumerator.Input.Length)
+            if (post != null && enumerator.WordPos <= enumerator.Input.Length + 1)
             {
                 post.Add(new string(enumerator.Current));
                 while (enumerator.MoveNext())
@@ -184,11 +184,10 @@
                 return IntPtr.Zero;
             }
 
-            var resultPointer = ImageBase;
-
+            var resultPointer = matchingPtr;
             if (parsedPattern.PostPattern.Length == 0)
             {
-                resultPointer += matchingPtr.ToInt32();
+                return new IntPtr(matchingPtr.ToInt64() + ImageBase.ToInt64());
             }
 
             for (var i = 0; i < parsedPattern.PostPattern.Length; i++)
@@ -221,23 +220,22 @@
                         }
 
                         case Keywords.Read8:
-                            resultPointer = new IntPtr(Data.Span[resultPointer.ToInt32()]);
-                            break;
+                            return new IntPtr(Data.Span[resultPointer.ToInt32()]);
+
                         case Keywords.Read16:
-                            resultPointer = new IntPtr(BitConverter.ToInt16(Data.Span.Slice(resultPointer.ToInt32(), 2)));
-                            break;
+                            return new IntPtr(BitConverter.ToInt16(Data.Span.Slice(resultPointer.ToInt32(), 2)));
+
                         case Keywords.Read32:
-                            resultPointer = new IntPtr(BitConverter.ToInt32(Data.Span.Slice(resultPointer.ToInt32(), 4)));
-                            break;
+                            return new IntPtr(BitConverter.ToInt32(Data.Span.Slice(resultPointer.ToInt32(), 4)));
+
                         case Keywords.Read64:
-                            resultPointer = new IntPtr(BitConverter.ToInt32(Data.Span.Slice(resultPointer.ToInt32(), 8)));
-                            break;
+                            return new IntPtr(BitConverter.ToInt32(Data.Span.Slice(resultPointer.ToInt32(), 8)));
+
                         case Keywords.Tracerelative:
-                            resultPointer = new IntPtr(resultPointer.ToInt32() + 4 + BitConverter.ToInt32(Data.Span.Slice(resultPointer.ToInt32(), 4)) + ImageBase.ToInt64());
-                            break;
+                            return new IntPtr(resultPointer.ToInt32() + 4 + BitConverter.ToInt32(Data.Span.Slice(resultPointer.ToInt32(), 4)) + ImageBase.ToInt64());
+
                         case Keywords.Tracecall:
-                            resultPointer = new IntPtr(resultPointer.ToInt32() + 1 + BitConverter.ToInt32(Data.Span.Slice(resultPointer.ToInt32(), 4)) + ImageBase.ToInt64());
-                            break;
+                            return new IntPtr(resultPointer.ToInt32() + 5 + BitConverter.ToInt32(Data.Span.Slice(resultPointer.ToInt32() + 1, 4)) + ImageBase.ToInt64());
 
                         default:
                             throw new ArgumentOutOfRangeException();
@@ -245,7 +243,7 @@
                 }
             }
 
-            return resultPointer;
+            return new IntPtr(resultPointer.ToInt32() + ImageBase.ToInt64());
         }
 
         /// <summary>

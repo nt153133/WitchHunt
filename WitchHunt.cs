@@ -87,6 +87,16 @@
             var length = 0;
             while (enumerator.MoveNext())
             {
+                if (enumerator.Current.Length == 6)
+                {
+                    if (enumerator.Current[0] == 'S' || enumerator.Current[0] == 's')
+                    {
+                        //bytes = new Span<byte>(new byte[pattern.Length-7]);
+                       // mask = new Span<byte>(new byte[pattern.Length-7]);
+                        continue;
+                    }
+                }
+
                 if (enumerator.Current.Length > 2)
                 {
                     post = new List<string>(3);
@@ -165,14 +175,16 @@
             while (index + bytesToSearchLength <= Data.Length && (index - start.ToInt32() < max))
             {
                 var match = Match(index, parsedPattern.BytesToSearch, parsedPattern.Mask);
-                switch (match)
+                if (match < 0)
                 {
-                    case < 0:
-                        index += -match; // partial match
-                        continue;
-                    case 0:
-                        index += bytesToSearchLength; // no partial matches. Skip this section...
-                        continue;
+                    index += -match; // partial match
+                    continue;
+                }
+
+                if (match == 0)
+                {
+                    index += bytesToSearchLength; // no partial matches. Skip this section...
+                    continue;
                 }
 
                 matchingPtr = new IntPtr(index);

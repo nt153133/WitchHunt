@@ -1,14 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
-        <LangVersion>9</LangVersion>
-        <Version>1.0.3</Version>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <LangVersion>8</LangVersion>
+        <Version>1.0.4.0</Version>
         <Description>A byte pattern matching library which uses the GreyMagic style of patterns.</Description>
         <PackageProjectUrl>https://github.com/nt153133/WitchHunt</PackageProjectUrl>
         <PackageReleaseNotes>Small memory optimization</PackageReleaseNotes>
         <RepositoryUrl>https://github.com/nt153133/WitchHunt</RepositoryUrl>
         <AssemblyVersion>1.0.4.0</AssemblyVersion>
+        <FileVersion></FileVersion>
     </PropertyGroup>
 
     <ItemGroup>

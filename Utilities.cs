@@ -17,13 +17,22 @@
 
             var index1 = Wildcards.IndexOf(tok[0]);
             var index2 = Wildcards.IndexOf(tok[1]);
-            return index1 switch
+            if (index1 >= 0 && index2 >= 0)
             {
-                >= 0 when index2 >= 0 => 0x00,
-                >= 0 when true => 0x0F,
-                < 0 when index2 >= 0 => 0xF0,
-                _ => 0xFF,
-            };
+                return 0x00;
+            }
+
+            if (index1 >= 0 && true)
+            {
+                return 0x0F;
+            }
+
+            if (index1 < 0 && index2 >= 0)
+            {
+                return 0xF0;
+            }
+
+            return 0xFF;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -52,13 +61,22 @@
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int HexValueOf(this char c)
         {
-            return c switch
+            if (c >= '0' && c <= '9')
             {
-                >= '0' and <= '9' => c - '0',
-                >= 'a' and <= 'f' => c - 'a' + 10,
-                >= 'A' and <= 'F' => c - 'A' + 10,
-                _ => 0,
-            };
+                return c - '0';
+            }
+
+            if (c >= 'a' && c <= 'f')
+            {
+                return c - 'a' + 10;
+            }
+
+            if (c >= 'A' && c <= 'F')
+            {
+                return c - 'A' + 10;
+            }
+
+            return 0;
         }
 
         /// <summary>

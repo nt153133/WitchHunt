@@ -293,14 +293,18 @@
                 {
                     return 1;
                 }
+                //Find the next byte that matches our starting byte. 
+                var mask = masks[0];
+                var bmo = bytesToMatch[0] & masks[0];
 
-                var indexOf = dataBuffer[1..].IndexOf(bytesToMatch[0]);
-                if (indexOf == -1)
+                var indexOf = 1;
+                for (; indexOf < dataBuffer.Length; indexOf++)
                 {
-                    return -bytesToMatch.Length;
+                    if ((dataBuffer[indexOf] & mask) != bmo) continue;
+                    break;
                 }
-
-                return -(indexOf + 1);
+            
+                return -indexOf;
             }
             catch (Exception)
             {

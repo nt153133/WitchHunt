@@ -6,7 +6,6 @@
     public static class Utilities
     {
         private const string Wildcards = "?";
-        private const string Hexchars = "0123456789abcdefABCDEF" + Wildcards;
 
         public static byte GetMask(this ReadOnlySpan<char> tok)
         {
@@ -45,7 +44,7 @@
 
             foreach (var t in str)
             {
-                if (!Hexchars.Contains(t))
+                if (!(t == '?' || (t >= '0' && t <= '9') || (t >= 'a' && t <= 'f') || (t >= 'A' && t <= 'F')))
                 {
                     return false;
                 }

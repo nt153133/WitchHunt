@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Runtime.CompilerServices;
 
     public class WitchHunt : ISearcher
     {
@@ -170,11 +171,13 @@
         private IntPtr FindSingle(ParsedPattern parsedPattern, IntPtr start, int max)
         {
             var matchingPtr = IntPtr.Zero;
-            var index = start.ToInt32();
+            var startInt = start.ToInt32();
+            var index = startInt;
             var bytesToSearchLength = parsedPattern.BytesToSearch.Length;
-            while (index + bytesToSearchLength <= Data.Length && (index - start.ToInt32() < max))
+            var data = Data.Span; // cache to avoid repeated ReadOnlyMemory<byte>.Span property access
+            while (index + bytesToSearchLength <= data.Length && (index - startInt < max))
             {
-                var match = Match(index, parsedPattern.BytesToSearch, parsedPattern.Mask);
+                var match = Match(data, index, parsedPattern.BytesToSearch, parsedPattern.Mask);
                 if (match < 0)
                 {
                     index += -match; // partial match
@@ -266,50 +269,57 @@
         /// 0 if there is no match
         /// -i if no match is found, this is the number of bytes that can be safely skipped.
         /// </summary>
-        private int Match(int index, ReadOnlySpan<byte> bytesToMatch, ReadOnlySpan<byte> masks)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static int Match(ReadOnlySpan<byte> data, int index, ReadOnlySpan<byte> bytesToMatch, ReadOnlySpan<byte> masks)
         {
-            try
-            {
-                if (index + bytesToMatch.Length > Data.Length)
-                {
-                    return 0;
-                }
-
-                // basically byte[] of the data buffer, chunk of the .text/rdata bytes
-                var dataBuffer = Data.Span.Slice(index, bytesToMatch.Length);
-
-                // first check if the pattern entirely matches the bytes
-                int i;
-                for (i = 0; i < bytesToMatch.Length; i++)
-                {
-                    if ((dataBuffer[i] & masks[i]) != (bytesToMatch[i] & masks[i]))
-                    {
-                        break;
-                    }
-                }
-
-                // Full pattern of bytes matched
-                if (i == bytesToMatch.Length)
-                {
-                    return 1;
-                }
-                //Find the next byte that matches our starting byte. 
-                var mask = masks[0];
-                var bmo = bytesToMatch[0] & masks[0];
-
-                var indexOf = 1;
-                for (; indexOf < dataBuffer.Length; indexOf++)
-                {
-                    if ((dataBuffer[indexOf] & mask) != bmo) continue;
-                    break;
-                }
-            
-                return -indexOf;
-            }
-            catch (Exception)
+            if (index + bytesToMatch.Length > data.Length)
             {
                 return 0;
             }
+
+            // basically byte[] of the data buffer, chunk of the .text/rdata bytes
+            var dataBuffer = data.Slice(index, bytesToMatch.Length);
+
+            // first check if the pattern entirely matches the bytes
+            int i;
+            for (i = 0; i < bytesToMatch.Length; i++)
+            {
+                if ((dataBuffer[i] & masks[i]) != (bytesToMatch[i] & masks[i]))
+                {
+                    break;
+                }
+            }
+
+            // Full pattern of bytes matched
+            if (i == bytesToMatch.Length)
+            {
+                return 1;
+            }
+
+            // Find the next byte that matches our starting byte.
+            var mask = masks[0];
+            var bmo = bytesToMatch[0] & mask;
+
+            // When the first byte has no wildcard, use IndexOf for SIMD-accelerated search.
+            if (mask == 0xFF)
+            {
+                var remaining = dataBuffer.Slice(1);
+                var nextIdx = remaining.IndexOf((byte)bmo);
+                return nextIdx < 0 ? -dataBuffer.Length : -(nextIdx + 1);
+            }
+
+            var indexOf = 1;
+            for (; indexOf < dataBuffer.Length; indexOf++)
+            {
+                if ((dataBuffer[indexOf] & mask) != bmo)
+                {
+                    continue;
+                }
+
+                break;
+            }
+
+            return -indexOf;
         }
     }
 }
